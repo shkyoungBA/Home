@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>양재 ICT 지구 뉴스 & 일정</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1b1f24;--mu:#6b7480;--ln:#e3e6ea;--ac:#1d6fe0;--acs:#e6f0fd;--dg:#d33;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mu:#9aa3ad;--ln:#2d333b;--ac:#5b9bff;--acs:#1f2e47;--dg:#ff6b6b}}
+:root[data-theme="dark"]{--bg:#14171b;--card:#1d2127;--tx:#e8eaed;--mu:#9aa3ad;--ln:#2d333b;--ac:#5b9bff;--acs:#1f2e47;--dg:#ff6b6b}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;line-height:1.5}
+header{padding:28px 20px 8px;max-width:1080px;margin:0 auto}
+h1{margin:0;font-size:1.5rem}
+header p{margin:4px 0 0;color:var(--mu);font-size:.9rem}
+main{max-width:1080px;margin:0 auto;padding:12px 20px 40px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+section{background:var(--card);border:1px solid var(--ln);border-radius:14px;padding:16px}
+h2{margin:0 0 10px;font-size:1.05rem}
+.news{list-style:none;margin:0;padding:0}
+.news li{padding:10px 0;border-top:1px solid var(--ln)}
+.news li:first-child{border-top:0}
+.news a{color:var(--tx);font-weight:600;text-decoration:none}
+.news a:hover{color:var(--ac)}
+.meta{color:var(--mu);font-size:.78rem}
+.news p{margin:3px 0 0;font-size:.88rem;color:var(--mu)}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.links a{font-size:.82rem;color:var(--ac);background:var(--acs);padding:5px 10px;border-radius:999px;text-decoration:none}
+.cal-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--card);color:var(--tx);border-radius:8px;padding:5px 10px}
+button:hover{border-color:var(--ac)}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.dow{font-size:.75rem;color:var(--mu);padding:4px 0}
+.day{position:relative;aspect-ratio:1/1;border:1px solid transparent;border-radius:10px;background:transparent;padding:0;font-size:.9rem}
+.day.out{opacity:.3}
+.day.today{border-color:var(--ac)}
+.day.sel{background:var(--ac);color:#fff}
+.day .dot{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);font-size:.62rem;color:var(--ac);font-weight:700}
+.day.sel .dot{color:#fff}
+.add{display:flex;gap:6px;margin:10px 0}
+.add input{flex:1}
+input[type=text]{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:7px 10px;min-width:0}
+.add button{background:var(--ac);color:#fff;border-color:var(--ac)}
+.todos{list-style:none;margin:0;padding:0}
+.todos li{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid var(--ln)}
+.todos li span{flex:1;word-break:break-word}
+.todos li.done span{text-decoration:line-through;color:var(--mu)}
+.todos li input[type=text]{flex:1}
+.todos button{padding:3px 8px;font-size:.8rem}
+.todos .del{color:var(--dg)}
+.empty{color:var(--mu);font-size:.88rem;padding:6px 0}
+footer{max-width:1080px;margin:0 auto;padding:0 20px 24px;color:var(--mu);font-size:.78rem}
+</style>
+</head>
+<body>
+<header>
+<h1>양재 ICT 특정개발진흥지구</h1>
+<p id="today"></p>
+</header>
+<main>
+<section>
+<h2>최신 뉴스</h2><div class="meta" id="upd" style="margin:-6px 0 8px"></div>
+<ul class="news" id="news"></ul>
+<div class="links">
+<a href="https://search.naver.com/search.naver?where=news&query=%EC%96%91%EC%9E%AC+ICT+%ED%8A%B9%EC%A0%95%EA%B0%9C%EB%B0%9C%EC%A7%84%ED%9D%A5%EC%A7%80%EA%B5%AC&sort=1" target="_blank" rel="noopener">네이버 뉴스 최신순</a>
+<a href="https://news.google.com/search?q=%EC%96%91%EC%9E%AC%20ICT%20%EC%A7%84%ED%9D%A5%EC%A7%80%EA%B5%AC&hl=ko&gl=KR&ceid=KR:ko" target="_blank" rel="noopener">구글 뉴스</a>
+</div>
+</section>
+<section>
+<div class="cal-h">
+<button id="prev" aria-label="이전 달">‹</button>
+<h2 id="ym" style="margin:0"></h2>
+<button id="next" aria-label="다음 달">›</button>
+</div>
+<div class="grid" id="grid"></div>
+<h2 id="seld" style="margin-top:16px"></h2>
+<div class="add">
+<input type="text" id="inp" placeholder="할일 입력 후 Enter" maxlength="200">
+<button id="addb">추가</button>
+</div>
+<ul class="todos" id="todos"></ul>
+</section>
+</main>
+<footer>할일은 이 브라우저에 저장됩니다. 기기를 바꾸면 보이지 않을 수 있어요.</footer>
+<script>
+let NEWS=[];
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,"0");
+const key=(y,m,d)=>y+"-"+pad(m+1)+"-"+pad(d);
+let store={};
+try{store=JSON.parse(localStorage.getItem("yj-todos")||"{}")}catch(e){store={}}
+function save(){try{localStorage.setItem("yj-todos",JSON.stringify(store))}catch(e){}}
+const now=new Date();
+let vy=now.getFullYear(),vm=now.getMonth(),sel=key(vy,vm,now.getDate()),editing=-1;
+const DOW=["일","월","화","수","목","금","토"];
+$("today").textContent=now.getFullYear()+"년 "+(now.getMonth()+1)+"월 "+now.getDate()+"일 ("+DOW[now.getDay()]+") 기준";
+
+async function loadNews(){
+  try{
+    const r=await fetch("news.json?t="+Date.now());
+    const j=await r.json();
+    NEWS=j.items||[];
+    $("upd").textContent=j.updated?("마지막 갱신: "+j.updated):"";
+  }catch(e){NEWS=[]}
+  renderNews();
+}
+function renderNews(){
+  const ul=$("news");ul.textContent="";
+  if(!NEWS.length){const li=document.createElement("li");li.className="empty";li.textContent="뉴스를 불러오지 못했어요.";ul.append(li);return}
+  NEWS.slice(0,15).forEach(n=>{
+    const li=document.createElement("li");
+    const a=document.createElement("a");a.href=n.u;a.target="_blank";a.rel="noopener";a.textContent=n.t;
+    const m=document.createElement("div");m.className="meta";m.textContent=n.d+(n.s?" · "+n.s:"");
+    li.append(a,m);
+    if(n.x){const p=document.createElement("p");p.textContent=n.x;li.append(p)}
+    ul.append(li);
+  });
+}
+function renderCal(){
+  $("ym").textContent=vy+"년 "+(vm+1)+"월";
+  const g=$("grid");g.textContent="";
+  DOW.forEach(w=>{const e=document.createElement("div");e.className="dow";e.textContent=w;g.append(e)});
+  const first=new Date(vy,vm,1).getDay(),dim=new Date(vy,vm+1,0).getDate();
+  for(let i=0;i<first;i++){g.append(document.createElement("div"))}
+  for(let d=1;d<=dim;d++){
+    const k=key(vy,vm,d),b=document.createElement("button");
+    b.className="day"+(k===key(now.getFullYear(),now.getMonth(),now.getDate())?" today":"")+(k===sel?" sel":"");
+    b.textContent=d;
+    const c=(store[k]||[]).filter(t=>!t.done).length;
+    if(c){const s=document.createElement("span");s.className="dot";s.textContent="●"+(c>1?c:"");b.append(s)}
+    b.onclick=()=>{sel=k;editing=-1;renderCal();renderTodos()};
+    g.append(b);
+  }
+}
+function renderTodos(){
+  const [y,m,d]=sel.split("-");
+  $("seld").textContent=Number(m)+"월 "+Number(d)+"일 할일";
+  const ul=$("todos");ul.textContent="";
+  const list=store[sel]||[];
+  if(!list.length){const e=document.createElement("li");e.className="empty";e.style.border="0";e.textContent="등록된 할일이 없어요.";ul.append(e);return}
+  list.forEach((t,i)=>{
+    const li=document.createElement("li");if(t.done)li.className="done";
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=!!t.done;
+    cb.onchange=()=>{t.done=cb.checked;save();renderCal();renderTodos()};
+    li.append(cb);
+    if(editing===i){
+      const inp=document.createElement("input");inp.type="text";inp.value=t.text;inp.maxLength=200;
+      const ok=document.createElement("button");ok.textContent="저장";
+      const commit=()=>{const v=inp.value.trim();if(v){t.text=v;save()}editing=-1;renderTodos()};
+      ok.onclick=commit;inp.onkeydown=e=>{if(e.key==="Enter")commit();if(e.key==="Escape"){editing=-1;renderTodos()}};
+      li.append(inp,ok);setTimeout(()=>inp.focus(),0);
+    }else{
+      const s=document.createElement("span");s.textContent=t.text;
+      const ed=document.createElement("button");ed.textContent="수정";ed.onclick=()=>{editing=i;renderTodos()};
+      const del=document.createElement("button");del.className="del";del.textContent="삭제";
+      del.onclick=()=>{list.splice(i,1);if(!list.length)delete store[sel];save();editing=-1;renderCal();renderTodos()};
+      li.append(s,ed,del);
+    }
+    ul.append(li);
+  });
+}
+function addTodo(){
+  const v=$("inp").value.trim();if(!v)return;
+  (store[sel]=store[sel]||[]).push({text:v,done:false});
+  $("inp").value="";save();renderCal();renderTodos();
+}
+$("addb").onclick=addTodo;
+$("inp").onkeydown=e=>{if(e.key==="Enter")addTodo()};
+$("prev").onclick=()=>{vm--;if(vm<0){vm=11;vy--}renderCal()};
+$("next").onclick=()=>{vm++;if(vm>11){vm=0;vy++}renderCal()};
+loadNews();renderCal();renderTodos();
+</script>
+</body>
+</html>
